@@ -1,0 +1,167 @@
+---
+title: Replaying the Problem
+description: Understand and configure Sentry Session Replay
+---
+
+Session Replay is a powerful feature that helps you visualize how users interact with your application before encountering errors. It records user sessions and allows you to replay them to understand the context around errors.
+
+## Understanding Session Replay
+
+Sentry's Session Replay provides:
+
+- A video-like reproduction of user interactions
+- Network request monitoring
+- Console logs and errors
+- DOM changes
+- Privacy controls to mask sensitive data
+
+## Enabling Session Replay
+
+If you followed the installation instructions in the previous section, Session Replay should already be configured. Let's review the configuration:
+
+```javascript
+// In sentry.client.config.js
+import * as Sentry from '@sentry/nextjs';
+
+Sentry.init({
+  dsn: "YOUR_DSN_HERE",
+  
+  // These settings control Session Replay
+  replaysSessionSampleRate: 0.1, // Record 10% of all sessions
+  replaysOnErrorSampleRate: 1.0, // Record 100% of sessions with errors
+  
+  integrations: [
+    new Sentry.Replay({
+      // Privacy settings
+      maskAllText: false,
+      blockAllMedia: false,
+    }),
+  ],
+});
+```
+
+## Configuring Privacy Controls
+
+Session Replay provides several privacy options to protect sensitive user data:
+
+### Text Masking
+
+You can mask all text or specific elements:
+
+```javascript
+new Sentry.Replay({
+  // Mask all text content
+  maskAllText: true,
+  
+  // Or use selectors to mask specific elements
+  maskTextSelector: 'input[type="password"], .sensitive-data',
+})
+```
+
+### Media Blocking
+
+Block images and video content from being captured:
+
+```javascript
+new Sentry.Replay({
+  // Block all media
+  blockAllMedia: true,
+})
+```
+
+### Input Sanitization
+
+Control how user inputs are recorded:
+
+```javascript
+new Sentry.Replay({
+  // Choose what to collect from inputs
+  collectInputs: true, // or false to not record inputs
+})
+```
+
+## Viewing Session Replays
+
+To view session replays:
+
+1. Go to your Sentry dashboard
+2. Navigate to the "Replays" section
+3. Browse available replays or filter by error status
+4. Click on a replay to view the session
+
+## Session Replay with Errors
+
+Session Replay is particularly useful when tied to error events. When a user encounters an error:
+
+1. Sentry captures the error details
+2. The session replay is linked to the error
+3. You can view the replay from the error details page
+
+Let's add a button to our application that will trigger an error while Session Replay is active:
+
+```javascript
+// Add this to a component in your application
+import * as Sentry from '@sentry/nextjs';
+
+function ReplayErrorTrigger() {
+  return (
+    <div>
+      <h3>Test Session Replay with Error</h3>
+      <button 
+        onClick={() => {
+          // Do some interactions first (will be captured in replay)
+          document.body.classList.add('error-state');
+          console.log('About to trigger an error...');
+          
+          // Then trigger the error
+          setTimeout(() => {
+            try {
+              // This will cause an error
+              const nullObject = null;
+              nullObject.someProperty = 'test';
+            } catch (error) {
+              Sentry.captureException(error);
+            }
+          }, 1000);
+        }}
+      >
+        Trigger Error for Replay
+      </button>
+    </div>
+  );
+}
+```
+
+Add this component to your application, click the button, and then check your Sentry dashboard for the error and associated replay.
+
+## Advanced Configuration
+
+### Custom User Interactions
+
+You can customize which interactions are captured:
+
+```javascript
+new Sentry.Replay({
+  // Capture clicks, scrolls, and navigation
+  clickDetection: true,
+  scrollDetection: true,
+  navigationDetection: true,
+})
+```
+
+### Network Capturing
+
+Control network request capturing:
+
+```javascript
+new Sentry.Replay({
+  // Network request capturing
+  networkDetailAllowUrls: ['/api/*', 'example.com'],
+  networkRequestHeaders: ['content-type', 'accept'],
+  networkResponseHeaders: ['content-type', 'content-length'],
+})
+```
+
+## Next Steps
+
+Now that we understand how to use Session Replay to diagnose issues, let's move on to [Tracing Performance](/tracing-performance/) to understand how to monitor and improve application performance. 

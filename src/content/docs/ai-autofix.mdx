@@ -1,0 +1,201 @@
+---
+title: AI Autofix Robots Arrive to Fix Bugs
+description: Discover how Sentry's AI can automatically fix bugs in your code
+---
+
+One of Sentry's most innovative features is its ability to use AI to analyze errors and suggest fixes automatically. In this section, we'll explore how to leverage Sentry's AI capabilities to identify and fix bugs more efficiently.
+
+## Understanding Sentry's AI Capabilities
+
+Sentry's AI features include:
+
+- **Error Analysis**: AI-powered insights to understand error causes
+- **Fix Suggestions**: Automatic code suggestions to fix errors
+- **Code Context**: Intelligent analysis of the surrounding code to provide context-aware solutions
+- **Integration with Development Workflows**: Seamless integration with GitHub and other version control systems
+
+## Enabling AI Features
+
+To use Sentry's AI capabilities, make sure you have the proper permissions in your Sentry account. Most AI features are available on paid plans, but some might be accessible in the free tier as well.
+
+## Accessing AI Suggestions
+
+When Sentry detects an error, it attempts to analyze the root cause and suggest fixes. To access these suggestions:
+
+1. Go to your Sentry dashboard
+2. Navigate to "Issues" and select an error
+3. Look for the "AI Suggestions" or "Recommended Fix" section
+
+## Example: Fixing a Common JavaScript Error
+
+Let's see how Sentry's AI can help fix a typical JavaScript error:
+
+```javascript
+// Buggy code
+function processUserData(users) {
+  users.forEach(user => {
+    const fullName = user.firstName + ' ' + user.lastName;
+    
+    // Error: Cannot read property 'address' of undefined
+    const city = user.location.address.city;
+    
+    console.log(`${fullName} lives in ${city}`);
+  });
+}
+```
+
+When this code encounters a user without a `location` or `address` property, it will throw an error. Sentry captures this error and analyzes it using AI.
+
+The AI might suggest a fix like:
+
+```javascript
+// Fixed code
+function processUserData(users) {
+  users.forEach(user => {
+    const fullName = user.firstName + ' ' + user.lastName;
+    
+    // Safely access nested properties using optional chaining
+    const city = user?.location?.address?.city || 'unknown city';
+    
+    console.log(`${fullName} lives in ${city}`);
+  });
+}
+```
+
+## Applying AI Fixes
+
+Sentry provides multiple ways to apply AI-suggested fixes:
+
+### 1. Manual Application
+
+You can manually copy the suggested fix and apply it to your codebase:
+
+1. Review the suggested fix in the Sentry dashboard
+2. Copy the code changes
+3. Apply them to your local development environment
+4. Test and deploy the fix
+
+### 2. GitHub Integration
+
+If you've integrated Sentry with GitHub, you can create pull requests directly from the Sentry interface:
+
+1. Navigate to the issue details page
+2. Look for the "Create Pull Request" button near the AI suggestion
+3. Review the proposed changes
+4. Submit the pull request
+
+## Real-World Example
+
+Let's walk through a complete example of fixing an error with Sentry's AI:
+
+1. First, we have a buggy component in our Next.js application:
+
+```javascript
+// pages/user/[id].js
+import { useEffect, useState } from 'react';
+
+export default function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const response = await fetch(`/api/users/${userId}`);
+        const userData = await response.json();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchUser();
+  }, [userId]);
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  
+  // This will crash if user is null (e.g., if the fetch failed)
+  return (
+    <div>
+      <h1>{user.name}'s Profile</h1>
+      <p>Email: {user.email}</p>
+      <p>Member since: {new Date(user.createdAt).toLocaleDateString()}</p>
+    </div>
+  );
+}
+
+export async function getServerSideProps(context) {
+  return {
+    props: {
+      userId: context.params.id,
+    },
+  };
+}
+```
+
+2. When the API request fails, this code crashes because it tries to access properties of `user` when it's `null`.
+
+3. Sentry captures this error and analyzes it with AI, suggesting a fix:
+
+```javascript
+// AI-suggested fix
+return (
+  <div>
+    {user ? (
+      <>
+        <h1>{user.name}'s Profile</h1>
+        <p>Email: {user.email}</p>
+        <p>Member since: {new Date(user.createdAt).toLocaleDateString()}</p>
+      </>
+    ) : (
+      <div>
+        <h1>User not found</h1>
+        <p>Sorry, we couldn't find the requested user profile.</p>
+      </div>
+    )}
+  </div>
+);
+```
+
+4. The AI explains that the fix adds a null check for the `user` object and provides an alternative UI when the user is not found.
+
+5. After applying the fix, our application no longer crashes when the API request fails.
+
+## Benefits of AI-Powered Fixes
+
+Using Sentry's AI to fix bugs offers several advantages:
+
+- **Faster Resolution**: AI can instantly analyze complex stack traces and suggest fixes
+- **Consistency**: AI ensures consistent error handling patterns across your codebase
+- **Learning Opportunity**: Developers can learn best practices from AI-suggested solutions
+- **Reduced Manual Work**: Automating the fix process saves time and mental effort
+
+## Limitations and Best Practices
+
+While AI is powerful, it's important to understand its limitations:
+
+1. **Always Review Suggestions**: AI isn't perfect; always review suggested fixes before applying them
+2. **Test Thoroughly**: Even with AI-suggested fixes, comprehensive testing is essential
+3. **Understand Root Causes**: Use AI suggestions as a learning opportunity to understand why errors occur
+4. **Combine with Human Expertise**: AI works best when combined with human judgment and domain knowledge
+
+## Conclusion
+
+Sentry's AI capabilities represent a significant advancement in error monitoring and debugging. By leveraging these features, you can:
+
+- Identify and fix bugs more quickly
+- Improve code quality through consistent error handling
+- Reduce the cognitive load of debugging complex issues
+- Free up developer time for more creative and strategic work
+
+As you integrate Sentry into your development workflow, make sure to explore these AI-powered features to get the most out of the platform.
+
+## Workshop Completion
+
+Congratulations! You've completed the Sentry Build workshop. You now have the knowledge to implement Sentry in your Next.js applications, monitor errors, analyze performance, and leverage AI to fix bugs automatically.
+
+Remember to check out the [Sentry documentation](https://docs.sentry.io/) for more advanced features and updates. 

@@ -1,0 +1,231 @@
+---
+title: Tracing Performance
+description: Monitor application performance with custom spans and traces
+---
+
+In this section, we'll explore Sentry's performance monitoring capabilities. Performance monitoring helps you identify bottlenecks and optimize your application for better user experience.
+
+## Understanding Performance Monitoring
+
+Sentry's performance monitoring provides:
+
+- Automatic instrumentation of page loads, navigation, and API requests
+- Custom transaction tracking
+- Detailed breakdown of operation times
+- Correlations between performance issues and errors
+
+## Enabling Performance Monitoring
+
+Performance monitoring should be enabled if you followed the installation steps. Let's review the configuration:
+
+```javascript
+// In sentry.client.config.js, sentry.server.config.js, and sentry.edge.config.js
+import * as Sentry from '@sentry/nextjs';
+
+Sentry.init({
+  dsn: "YOUR_DSN_HERE",
+  
+  // This controls performance monitoring
+  tracesSampleRate: 1.0, // Capture 100% of transactions
+});
+```
+
+You can adjust the `tracesSampleRate` based on your traffic volume. For high-traffic applications, you might want to set it to a lower value like `0.1` (10% of transactions).
+
+## Automatic Instrumentation
+
+Sentry automatically creates transactions for:
+
+- Page loads
+- Navigation events
+- API requests
+
+These transactions appear in your Sentry dashboard without any additional code. Let's look at how they're represented.
+
+## Custom Transactions
+
+While automatic instrumentation is helpful, you often need to track specific operations in your application. Let's create custom transactions:
+
+### Creating Transactions
+
+```javascript
+import * as Sentry from '@sentry/nextjs';
+
+// Start a transaction
+const transaction = Sentry.startTransaction({
+  name: 'Data Processing',
+  op: 'task',
+});
+
+// Set the transaction as current
+Sentry.configureScope(scope => {
+  scope.setSpan(transaction);
+});
+
+try {
+  // Perform your operations here
+  processData();
+} finally {
+  // Finish the transaction
+  transaction.finish();
+}
+```
+
+### Creating Child Spans
+
+Spans are sub-operations within a transaction. They help you break down complex operations:
+
+```javascript
+import * as Sentry from '@sentry/nextjs';
+
+function processData() {
+  // Create a child span
+  const span = Sentry.getCurrentHub().getScope().getSpan()
+    .startChild({
+      op: 'task',
+      description: 'Process data',
+    });
+  
+  try {
+    // Your processing logic here
+    
+    // You can add data to the span
+    span.setData('items_processed', 42);
+  } finally {
+    // Always finish the span
+    span.finish();
+  }
+}
+```
+
+## Practical Example: Tracking API Requests
+
+Let's implement performance monitoring for API requests in our application:
+
+```javascript
+// In a component or API route
+import * as Sentry from '@sentry/nextjs';
+
+async function fetchTasks() {
+  // Start a transaction
+  const transaction = Sentry.startTransaction({
+    name: 'Fetch Tasks',
+    op: 'http.client',
+  });
+  
+  try {
+    // Start a child span for the database query
+    const dbSpan = transaction.startChild({
+      op: 'db',
+      description: 'Query tasks from database',
+    });
+    
+    // Perform the API request
+    const response = await fetch('/api/tasks');
+    
+    // Add data to the span
+    dbSpan.setData('response_status', response.status);
+    dbSpan.setData('response_size', response.headers.get('content-length'));
+    
+    // Finish the database span
+    dbSpan.finish();
+    
+    // Start another span for processing the data
+    const processSpan = transaction.startChild({
+      op: 'task',
+      description: 'Process task data',
+    });
+    
+    // Process the data
+    const data = await response.json();
+    
+    // Add more context
+    processSpan.setData('tasks_count', data.length);
+    
+    // Finish the processing span
+    processSpan.finish();
+    
+    return data;
+  } catch (error) {
+    // Capture the error with the transaction
+    Sentry.captureException(error, {
+      contexts: {
+        performance: {
+          transaction_id: transaction.traceId,
+        },
+      },
+    });
+    throw error;
+  } finally {
+    // Always finish the transaction
+    transaction.finish();
+  }
+}
+```
+
+## Using the Trace Explorer
+
+To view performance data:
+
+1. Go to your Sentry dashboard
+2. Navigate to "Performance" > "Trace Explorer"
+3. Browse transactions and filter by type, name, or duration
+4. Click on a transaction to view its details and spans
+
+## Optimizing Performance
+
+Now that we can monitor performance, let's optimize our application:
+
+1. Identify the slowest transactions in the Trace Explorer
+2. Look for spans that take the most time
+3. Implement optimizations:
+
+```javascript
+// Before optimization
+async function fetchData() {
+  // Fetch all data at once
+  const data = await fetchAllData();
+  return processData(data);
+}
+
+// After optimization
+async function fetchData() {
+  // Start a transaction
+  const transaction = Sentry.startTransaction({
+    name: 'Optimized Data Fetch',
+    op: 'task',
+  });
+  
+  try {
+    // Fetch only necessary data
+    const span1 = transaction.startChild({
+      op: 'http.client',
+      description: 'Fetch essential data',
+    });
+    const essentialData = await fetchEssentialData();
+    span1.finish();
+    
+    // Process the essential data first
+    const span2 = transaction.startChild({
+      op: 'task',
+      description: 'Process essential data',
+    });
+    const result = processEssentialData(essentialData);
+    span2.finish();
+    
+    // Fetch additional data in the background
+    fetchAdditionalData().then(additionalData => {
+      // Process additional data when available
+      processAdditionalData(additionalData);
+    });
+    
+    return result;
+  } finally {
+    transaction.finish();
+  }
+}
+```
+
+## Next Steps
+
+Now that we've learned how to monitor and optimize performance, let's explore how Sentry can [automatically fix bugs using AI](/ai-autofix/). 

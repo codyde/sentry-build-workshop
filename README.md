@@ -1,42 +1,51 @@
-# Starlight Starter Kit: Basics
+# Sentry Build Workshop Guide
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+This repository contains the documentation and guide for the Sentry Build workshop, built using [Astro Starlight](https://starlight.astro.build).
 
+## About the Workshop
+
+Sentry Build is a hands-on workshop that teaches developers how to integrate Sentry into Next.js applications. The workshop covers:
+
+- Getting started with a Next.js project
+- Installing and configuring Sentry
+- Using Session Replay to understand user interactions
+- Monitoring application performance with custom traces
+- Leveraging AI-powered features to automatically fix bugs
+
+## Workshop Content
+
+The workshop is divided into five main sections:
+
+1. **Code Breaks... So What Now** - Introduction and project setup
+2. **Install Sentry!** - Installation and initial configuration
+3. **Replaying the Problem** - Session Replay functionality
+4. **Tracing Performance** - Performance monitoring and custom spans
+5. **AI Autofix Robots Arrive** - AI-powered error fixing capabilities
+
+## Running the Documentation Locally
+
+### Prerequisites
+
+- Node.js (version 16 or higher)
+- npm or yarn
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/getsentry/sentry-build-workshop.git
+cd sentry-build-workshop
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
 ```
-npm create astro@latest -- --template starlight
-```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/starlight/tree/main/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/starlight/tree/main/examples/basics)
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/withastro/starlight&create_from_path=examples/basics)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fwithastro%2Fstarlight%2Ftree%2Fmain%2Fexamples%2Fbasics&project-name=my-starlight-docs&repository-name=my-starlight-docs)
+The documentation will be available at `http://localhost:4321`.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro + Starlight project, you'll see the following folders and files:
-
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   ├── docs/
-│   └── content.config.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
-```
-
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
-
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
-
-Static assets, like favicons, can be placed in the `public/` directory.
-
-## 🧞 Commands
+## Commands
 
 All commands are run from the root of the project, from a terminal:
 
@@ -47,8 +56,13 @@ All commands are run from the root of the project, from a terminal:
 | `npm run build`           | Build your production site to `./dist/`          |
 | `npm run preview`         | Preview your build locally, before deploying     |
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-## 👀 Want to learn more?
+## Contributing
 
-Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
+If you'd like to contribute to this workshop, feel free to open a pull request or file an issue on the repository.
+
+## Resources
+
+- [Sentry Documentation](https://docs.sentry.io/)
+- [Next.js SDK Documentation](https://docs.sentry.io/platforms/javascript/guides/nextjs/)
+- [Astro Starlight Documentation](https://starlight.astro.build/)

@@ -1,36 +1,38 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
+title: Welcome to Sentry Build
+description: Learn how to integrate and leverage Sentry in your Next.js applications.
 template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
+  tagline: A hands-on workshop to master error monitoring, session replay, performance tracking, and AI-powered fixes with Sentry
   image:
-    file: ../../assets/houston.webp
+    file: ../../assets/sentry-glyph-light-400x367.png
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: Get Started
+      link: /code-breaks/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
+    - text: Sentry.io
+      link: https://sentry.io
       icon: external
-      variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+## Workshop Modules
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="Code Breaks... So What Now" icon="error">
+		Get started with your project using Stackblitz or local development.
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Install Sentry!" icon="add-document">
+		Learn how to install and configure Sentry in your Next.js application.
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
+	<Card title="Replaying the Problem" icon="videocamera">
+		Understand Session Replay and explore its configuration options.
 	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="Tracing Performance" icon="chart">
+		Create custom spans and traces to monitor application performance.
+	</Card>
+	<Card title="AI Autofix Robots Arrive" icon="rocket">
+		Discover how Sentry's AI-powered features can automatically fix bugs in your code.
 	</Card>
 </CardGrid>
