@@ -1,0 +1,207 @@
+---
+title: "Issue 4: Payment Processing Problems"
+description: "Debugging payment processing with breadcrumbs and custom spans"
+---
+
+## The Final Chapter - Fixing the "Gimme Money" button
+
+We can tell that our client side is working correctly; because items are being successfully added to the shopping cart when we add them.
+
+We could add a ton of `console.log()` statements to try and figure out how data is moving across, but we've picked up some new tricks on our journey that are a lot more interesting. 
+
+On the Client side, we'll instrument Breadcrumbs to help us track the interactions within our page, we'll also instrument a Custom Span like we did in the previous lesson to track what properties are being sent. 
+
+Server side, we'll create a span that will track the incoming data, and help us compare the values. 
+
+## Client-Side Setup 
+
+We'll start with our Breadcrumbs. Open up `/app/checkout/page.tsx` file, and we will bring in the Sentry configuration for the custom breadcumb. 
+
+Find the `handleSubmit` function, and place this breadcrumb before the `makePurchase` call. 
+
+```javascript
+// top of the file 
+import * as Sentry from '@sentry/nextjs';
+
+// Inside handleSubmit function, before makePurchase call
+Sentry.addBreadcrumb({
+  category: 'checkout',
+  message: `Attempting checkout with ${items.length} items`,
+  level: 'info',
+  data: {
+    itemCount: items.length,
+    itemDetails: items.map(item => ({ id: item.id, name: item.name, price: item.price })),
+    totalAmount: totalPrice
+  }
+});
+```
+
+This breadcrumb will add additional tracking when the user interacts with the component. It will track the individual items in the cart, the total price, and the number of items. 
+
+Next, we'll instrument a custom span to track the properties being sent to the server. 
+
+Head to `/app/lib/store.ts` and find the `makePurchase` call. This is the call that actually sends our interaction to the server. We'll use a span here to track the outgoing request and its contents.
+
+Replace the entire `makePurchase` call with this: 
+
+```javascript
+// top of the file 
+import * as Sentry from '@sentry/nextjs';
+
+makePurchase: async (paymentDetails: { items: Array<{ id: string; price: number; name: string }>; totalAmount: number }) => {
+  set({ processingPurchase: true, purchaseError: null });
+  
+  return await Sentry.startSpan(
+    {
+      name: "Client Purchase Request",
+      op: "purchase.client",
+      attributes: {
+        "cart.items.count": paymentDetails.items.length,
+        "cart.total_amount": paymentDetails.totalAmount,
+        "cart.items": JSON.stringify(paymentDetails.items.map(item => ({ id: item.id, name: item.name, price: item.price })))
+      }
+    },
+    async () => {
+      try {
+        const authState = useAuthStore.getState();
+        
+        const response = await fetch('/api/checkout/purchase', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(authState.isAuthenticated && authState.user 
+              ? { [AUTH_CONFIG.authHeaderName]: `${AUTH_CONFIG.tokenPrefix} ${authState.user.id}` } 
+              : {})
+          },
+          body: JSON.stringify(paymentDetails),
+        });
+      
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'An error occurred during checkout.');
+        }
+        
+        set({ 
+          processingPurchase: false, 
+          purchaseComplete: true 
+        });
+        
+        return { success: true };
+      } catch (error: any) {
+        console.error('Purchase error:', error);
+        set({ 
+          processingPurchase: false,
+          purchaseError: error.message || 'Payment processing failed'
+        });
+        
+        return { 
+          success: false, 
+          error: error.message || 'Payment processing failed. Please try again.' 
+        };
+      }
+    }
+  );
+},
+```
+
+## Server-Side Setup 
+
+Open up `/app/api/checkout/purchase/route.ts` and we'll add a span to capture the incoming request. 
+
+Replace the contents of the POST call with this:
+
+```javascript
+// top of the file 
+import * as Sentry from '@sentry/nextjs';
+
+// replace the POST section with this
+export async function POST(request: Request) {
+  return Sentry.startSpan(
+    {
+      name: "Server Purchase Processing",
+      op: "purchase.server",
+    },
+    async () => {
+      try {
+        const body = await request.json();
+        
+        // Extract cart data from request body
+        const { items: cartContents, paymentDetails, totalAmount } = body;
+        
+        // Add span attributes to track the values
+        Sentry.setSpanAttribute("cart.raw_body", JSON.stringify(body));
+        Sentry.setSpanAttribute("cart.has_items_property", body.hasOwnProperty('items'));
+        Sentry.setSpanAttribute("cart.items_value", body.items ? JSON.stringify(body.items) : "undefined");
+        Sentry.setSpanAttribute("cart.received_items", cartContents ? JSON.stringify(cartContents) : "undefined");
+        Sentry.setSpanAttribute("cart.received_items_count", cartContents ? (Array.isArray(cartContents) ? cartContents.length : 0) : 0);
+        Sentry.setSpanAttribute("cart.total_amount", totalAmount);
+        
+        // Check auth header (simplified, no token validation)
+        const authHeader = request.headers.get('Authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          Sentry.setSpanAttribute("auth.error", "missing_or_invalid_auth_header");
+          
+          return NextResponse.json(
+            { 
+              error: 'Authentication required',
+              message: 'You must provide a valid authentication token',
+              code: 'AUTH_REQUIRED'
+            },
+            { status: 401 }
+          );
+        }
+        
+        if (!cartContents || !Array.isArray(cartContents) || cartContents.length === 0) {
+          Sentry.setSpanAttribute("cart.error", "empty_cart");
+          Sentry.setSpanAttribute("cart.validation_details", JSON.stringify({
+            cartContents_exists: !!cartContents,
+            isArray: Array.isArray(cartContents),
+            length: cartContents ? cartContents.length : 0
+          }));
+          
+          return NextResponse.json(
+            { 
+              error: 'No items in cart',
+              message: 'Your cart is empty. Please add items before checkout',
+              code: 'EMPTY_CART'
+            },
+            { status: 400 }
+          );
+        }
+          
+        // Simulate payment processing time
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        const transactionId = Math.random().toString(36).substring(2, 15);
+        Sentry.setSpanAttribute("transaction.id", transactionId);
+        Sentry.setSpanAttribute("transaction.amount", totalAmount);
+        Sentry.setSpanAttribute("transaction.item_count", cartContents.length);
+        
+        return NextResponse.json({
+          success: true,
+          transactionId,
+          timestamp: new Date().toISOString(),
+          amount: totalAmount,
+          itemCount: cartContents.length
+        });
+      } catch (error) {
+        console.error('Purchase API error:', error);
+        Sentry.captureException(error);
+        
+        return NextResponse.json(
+          { 
+            error: 'Payment processing failed',
+            message: 'An error occurred while processing your payment',
+            details: process.env.NODE_ENV === 'development' ? String(error) : undefined,
+            code: 'PAYMENT_ERROR'
+          },
+          { status: 500 }
+        );
+      }
+    }
+  );
+}
+```
+
+With these in place, reload our application and try the checkout flow again. Once it fails, we can head into Sentry and check out our results. 

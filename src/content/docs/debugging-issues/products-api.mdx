@@ -1,0 +1,71 @@
+---
+title: "Issue 1: The Products API Investigation"
+description: "Debugging the missing products issue in the marketplace"
+---
+
+Let's start by exploring the error in our Products API. Open the Sentry issue for this one and explore the details. 
+
+![Products API](../../../assets/img/IssueView.gif)
+
+Within this issue, you'll be able to see: 
+
+* Details on the error
+* A stack trace for the code
+* Important debugging context information like browser, user, and environment details
+* Session replays (when available)
+* Traces and Span's related to your issue
+* And root cause and resolution information from Sentry's AI product Seer (Autofix)
+
+We can use this information to help fix the issue.
+
+Let's open `/api/products/route.ts`. In here, we're going to modify our `catch` block to capture the error with Sentry using the `Sentry.captureException(error)` method, **Uncomment line 4 to enable the import of Sentry, and uncomment the `Sentry.captureException(error)` line to enable the error capture**:
+
+```javascript
+// this is line 4
+// import * as Sentry from '@sentry/nextjs';
+// ...
+} catch (error) {
+    console.error('Error in products API route:', error);
+
+    // SENTRY-THIS: Cathing your exceptions!
+    // Sentry.captureException(error);
+
+    return NextResponse.json(
+// ...
+```
+
+With that uncommented, we'll get high fiedlity error reports in Sentry for failures on this route. This includes the error message, stack trace, and other useful information.
+
+## Resolving Issue 1 - Problems in the Products API
+
+Using Sentry, theres a few things we can quickly find out:
+
+* Details on the error message that was thrown - `relation "product" does not exist`
+* This is happening on a GET call, in the /api/products route
+* Seer (AutoFix) is telling us that the "product" relation doesn't exist; which is a database error 
+* Our replay shows exactly where the error is happening matching our breadcrumbs 
+* We can see a our traces and spans that show the failing communication in the route
+
+We can explore the Span for our database call, which is automatically instrumented, and see the query that was used. 
+
+![Database Span](../../../assets/img/DatabaseTrace.png)
+
+When we explore the `schema.ts` file in the code, we can see the table is actually called `products` and not `product`. Someone clearly didn't check carefully before writing their query. 
+
+This is why you should use the Drizzle native query builder, and not just write raw SQL. Oh Well. Technical debt is rough. 
+
+We can fix this by updating the query to use the correct table name. In the `/api/products/route.ts` file, update this line:
+
+```javascript
+const result = await db.execute(sql`SELECT * FROM "product"`);
+```
+
+to this: 
+
+```javascript
+const result = await db.execute(sql`SELECT * FROM "products"`);
+```
+
+Save your file and reload your browser... looks like we're starting to get back into business! 
+
+![Products API Fixed](../../../assets/img/ProductsResolved.png) 
