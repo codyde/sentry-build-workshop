@@ -144,7 +144,7 @@ Server side, we'll create a span that will track the incoming data, and we can u
              const body = await request.json();
              
              // Extract cart data from request body
-             const { items: cartContents, paymentDetails, totalAmount } = body;
+             const { cartContents, totalAmount } = body;
              
              // Add span attributes to track the values
              span.setAttributes({
