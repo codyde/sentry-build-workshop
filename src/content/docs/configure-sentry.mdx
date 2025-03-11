@@ -39,7 +39,7 @@ When you run the command, you'll see a series of prompts:
 
    - **Error Monitoring**: Enable to catch runtime errors
    - **Performance Monitoring**: Enable to track app performance
-   - **Session Replay**: Enable to see visual recreations of user sessions
+   - **Replays**: Enable to see visual recreations of user sessions
 
 <details>
 <summary>Learn More: Error Monitoring</summary>
@@ -86,9 +86,9 @@ By monitoring performance, you can ensure your application not only works but wo
 </details>
 
 <details>
-<summary>Learn More: Session Replay</summary>
+<summary>Learn More: Replays</summary>
 
-Session Replay is like having a video recording of what your users experienced:
+Replays are like having a video recording of what your users experienced:
 
 - Watch recreations of user sessions leading up to errors
 - See exactly what users saw and did
@@ -96,7 +96,7 @@ Session Replay is like having a video recording of what your users experienced:
 - Understand complex user interactions that trigger bugs
 - Reproduce hard-to-track errors
 
-Session Replay captures:
+Replays captures:
 - DOM changes
 - User interactions (clicks, scrolls, form inputs)
 - Console logs
@@ -135,7 +135,7 @@ The wizard configures your application with several important files:
      replaysSessionSampleRate: 0.1,
      replaysOnErrorSampleRate: 1.0,
      
-     // Session replay is only available in the browser
+     // Replays are only available in the browser
      integrations: [Sentry.replayIntegration()],
    });
    ```
@@ -226,4 +226,4 @@ You've now:
 
 ## Next Steps
 
-Now that we have Sentry catching errors, let's move to [Instrumenting Errors](/instrumenting-errors/) where we'll learn how to actively instrument our code with try/catch blocks and Sentry's error capturing functions to get even more context about what's going wrong in our application. 
+Now that we have Sentry catching errors, let's move to [Debugging Issues](/debugging-issues/) where we'll learn how to actively instrument our code with try/catch blocks and Sentry's error capturing functions to get even more context about what's going wrong in our application. 

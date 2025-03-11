@@ -27,16 +27,17 @@ export default defineConfig({
               {
                   label: 'Workshop',
                   items: [
+                      { label: 'Quickstart', slug: 'quickstart' },
                       { label: 'Code Breaks... So What Now', slug: 'code-breaks' },
                       { label: 'Configuring Sentry', slug: 'configure-sentry' },
                       {
                           label: 'Debugging Issues',
                           items: [
                               { label: 'Introduction', slug: 'debugging-issues' },
-                              { label: 'Issue 1: Shattered APIs', slug: 'debugging-issues/products-api' },
-                              { label: 'Issue 2: Fix me is broken', slug: 'debugging-issues/fix-me-button' },
-                              { label: 'Issue 3: Auth who?', slug: 'debugging-issues/auth-header' },
-                              { label: 'Issue 4: Pay me, pay not', slug: 'debugging-issues/payment-processing' }
+                              { label: 'Issue 1: Shattered APIs', slug: 'debugging-issues/issue-1-products-api' },
+                              { label: 'Issue 2: Fix me is broken', slug: 'debugging-issues/issue-2-fix-me-button' },
+                              { label: 'Issue 3: Auth who?', slug: 'debugging-issues/issue-3-auth-header' },
+                              { label: 'Issue 4: Pay me, pay not', slug: 'debugging-issues/issue-4-payment-processing' }
                           ]
                       },
                       { label: 'Wrapping Up!', slug: 'wrapping-up' },

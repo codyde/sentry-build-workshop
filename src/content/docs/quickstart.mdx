@@ -1,0 +1,83 @@
+---
+title: Quickstart Guide
+description: Get up and running with the workshop in minutes
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+Follow this guide to get up and running with the workshop environment in the fastest way possible.
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- [Git](https://git-scm.com/downloads)
+- [Node.js](https://nodejs.org/) (includes npm)
+- [pnpm](https://pnpm.io/installation) package manager
+- [Homebrew](https://brew.sh/) (recommended for macOS users to simplify installations)
+
+Additionally, you'll need a Sentry account to follow along with the error monitoring portions of this workshop:
+- [Sign up for a free Sentry.io trial](https://sentry.io/signup/) if you don't already have an account
+
+## Setup Instructions
+
+<Steps>
+  1. **Clone the repository**
+
+     ```bash
+     git clone https://github.com/codyde/errorfix-workshop
+     ```
+
+  2. **Navigate to the project directory**
+
+     ```bash
+     cd errorfix-workshop
+     ```
+
+  3. **Create a .env file**
+
+     ```bash
+     touch .env
+     ```
+
+  4. **Add the database connection string to your .env file**
+
+     ```bash
+     # Update this to match your database parameters
+     echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres" >> .env
+     ```
+
+  5. **Install dependencies**
+
+     ```bash
+     # installs all pacakages
+     npm i
+     ```
+
+  6. **Set up Sentry using the wizard**
+
+     ```bash
+     npx @sentry/wizard@latest -i nextjs
+     ```
+
+  7. **Start the development server**
+
+     ```bash
+     npm run dev
+     ```
+</Steps>
+
+## What's Available After Setup
+
+Once you've completed the setup, you'll have access to:
+
+- ErrorFix - A Next.js application with Sentry error monitoring integrated
+- Local development environment running at [http://localhost:3000](http://localhost:3000)
+- Error tracking and monitoring capabilities
+- Replay functionality to diagnose user issues
+- Performance monitoring tools
+
+This setup allows you to explore all the workshop modules, including error monitoring, session replays, performance tracking, and AI-powered fixes with Sentry.
+
+## Next Steps
+
+Once your environment is running, head to the [Code Breaks](/code-breaks/) module to start learning how to identify and fix errors using Sentry.
