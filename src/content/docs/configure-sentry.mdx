@@ -3,43 +3,55 @@ title: Configuring Sentry
 description: Set up and configure Sentry in your Next.js application
 ---
 
+import { Steps } from '@astrojs/starlight/components';
+
 Let's face it—your code is going to break. It happens to all of us. The question is: how fast can you fix it when it does? In this section, we'll add Sentry to our Next.js application so we can catch those errors in the wild before our users start tweeting about them.
 
-## Quick Setup with Sentry CLI
+## Setting Up Sentry
 
-Let's get Sentry integrated with our ErrorFix application quickly:
+<Steps>
+  1. **Run the Sentry CLI Wizard**
 
-```bash
-npx @sentry/wizard@latest -i nextjs
-```
+     Get Sentry integrated with our ErrorFix application quickly:
 
-This wizard will:
-1. Connect to your Sentry account
-2. Set up configuration files
-3. Create an example error page to test your setup
+     ```bash
+     npx @sentry/wizard@latest -i nextjs
+     ```
 
-## Following the Wizard
+     This wizard will:
+     - Connect to your Sentry account
+     - Set up configuration files
+     - Create an example error page to test your setup
 
-When you run the command, you'll see a series of prompts:
+  2. **Complete the Authentication Process**
 
-1. **Authentication**: Choose between browser login (easiest) or an auth token
-   - If you don't have a token handy, just go with the browser option
-   - The wizard will open your browser and let you log in to Sentry
+     When you run the command, you'll be prompted to authenticate:
 
-2. **Project Selection**: Choose your Sentry project
+     - Choose between browser login (easiest) or an auth token
+     - If you don't have a token handy, just go with the browser option
+     - The wizard will open your browser and let you log in to Sentry
 
-   ![Sentry Project Selection](../../assets/img/4-ProjectCreate.png)
+  3. **Select or Create a Project**
 
-   - If you don't have one yet, the wizard can create it for you
-   - Select "Next.js" as the platform
+     Choose your Sentry project:
 
-3. **Feature Selection**: You'll be asked which features to enable:
+     ![Sentry Project Selection](../../assets/img/4-ProjectCreate.png)
 
-   ![Sentry Feature Selection](../../assets/img/5-CLIInstall.png)
+     - If you don't have one yet, the wizard can create it for you
+     - Select "Next.js" as the platform
 
-   - **Error Monitoring**: Enable to catch runtime errors
-   - **Performance Monitoring**: Enable to track app performance
-   - **Replays**: Enable to see visual recreations of user sessions
+  4. **Choose Features to Enable**
+
+     You'll be asked which features to enable:
+
+     ![Sentry Feature Selection](../../assets/img/5-CLIInstall.png)
+
+     - **Error Monitoring**: Enable to catch runtime errors
+     - **Performance Monitoring**: Enable to track app performance
+     - **Replays**: Enable to see visual recreations of user sessions
+</Steps>
+
+## Understanding Sentry Features
 
 <details>
 <summary>Learn More: Error Monitoring</summary>
@@ -110,120 +122,129 @@ Privacy features ensure sensitive data isn't captured:
 This feature dramatically reduces time spent trying to reproduce issues, especially those that depend on specific user interactions or state sequences.
 </details>
 
-## What the Wizard Adds to Your Project
+## What Gets Added to Your Project
 
-The wizard configures your application with several important files:
+<Steps>
+  1. **Configuration Files for Every Environment**
 
-1. **Configuration Files for Every Environment**:
-   - `sentry.client.config.js` - For browser errors
-   - `sentry.server.config.js` - For server-side rendering/API routes
-   - `sentry.edge.config.js` - For edge functions
+     The wizard creates specific config files for different execution contexts:
 
-   Here's what the client configuration looks like:
+     - `sentry.client.config.js` - For browser errors
+     - `sentry.server.config.js` - For server-side rendering/API routes
+     - `sentry.edge.config.js` - For edge functions
 
-   ```javascript
-   // sentry.client.config.js
-   import * as Sentry from '@sentry/nextjs';
+     Here's what the client configuration looks like:
 
-   Sentry.init({
-     dsn: "https://your-public-dsn@o0.ingest.sentry.io/0",
-     
-     // Capture all errors in development
-     tracesSampleRate: 1.0,
-     
-     // Record 10% of normal sessions, but all error sessions
-     replaysSessionSampleRate: 0.1,
-     replaysOnErrorSampleRate: 1.0,
-     
-     // Replays are only available in the browser
-     integrations: [Sentry.replayIntegration()],
-   });
-   ```
+     ```javascript
+     // sentry.client.config.js
+     import * as Sentry from '@sentry/nextjs';
 
-2. **Updated Next.js Configuration**:
-   - Adds Sentry's webpack plugin to `next.config.js`
-   - Configures source map uploads
-   - Sets up error handling middleware
+     Sentry.init({
+       dsn: "https://your-public-dsn@o0.ingest.sentry.io/0",
+       
+       // Capture all errors in development
+       tracesSampleRate: 1.0,
+       
+       // Record 10% of normal sessions, but all error sessions
+       replaysSessionSampleRate: 0.1,
+       replaysOnErrorSampleRate: 1.0,
+       
+       // Replays are only available in the browser
+       integrations: [Sentry.replayIntegration()],
+     });
+     ```
 
-   ```javascript
-   // next.config.js
-   const { withSentryConfig } = require('@sentry/nextjs');
+  2. **Updated Next.js Configuration**
 
-   const nextConfig = {
-     // Your existing config stays here
-   };
+     Sentry modifies your Next.js config:
 
-   module.exports = withSentryConfig(
-     nextConfig,
-     {
-       silent: true, // Less console noise during builds
-       org: "your-organization",
-       project: "your-project",
+     - Adds Sentry's webpack plugin to `next.config.js`
+     - Configures source map uploads
+     - Sets up error handling middleware
 
-       reactComponentAnnotation: {
-        enabled: true,
-       },
+     ```javascript
+     // next.config.js
+     const { withSentryConfig } = require('@sentry/nextjs');
+
+     const nextConfig = {
+       // Your existing config stays here
+     };
+
+     module.exports = withSentryConfig(
+       nextConfig,
+       {
+         silent: true, // Less console noise during builds
+         org: "your-organization",
+         project: "your-project",
+
+         reactComponentAnnotation: {
+          enabled: true,
+         },
+       }
+     );
+     ```
+
+  3. **App Router Instrumentation**
+
+     Creates or updates `instrumentation.ts` for App Router support:
+
+     ```typescript
+     // instrumentation.ts
+     export async function register() {
+       if (process.env.NEXT_RUNTIME === "nodejs") {
+         await import("./sentry.server.config");
+       }
+
+       if (process.env.NEXT_RUNTIME === "edge") {
+         await import("./sentry.edge.config");
+       }
      }
-   );
-   ```
+     ```
 
-3. **App Router Instrumentation**:
-   - Creates/updates `instrumentation.ts` for App Router support
+  4. **Example Error Page**
 
-   ```typescript
-   // instrumentation.ts
-   export async function register() {
-     if (process.env.NEXT_RUNTIME === "nodejs") {
-       await import("./sentry.server.config");
-     }
+     Adds a test page at `/sentry-example-page` to verify error capturing
+</Steps>
 
-     if (process.env.NEXT_RUNTIME === "edge") {
-       await import("./sentry.edge.config");
-     }
-   }
-   ```
+## Testing Your Setup
 
-4. **Example Error Page**:
-   - Adds `/sentry-example-page` to test different error scenarios
+<Steps>
+  1. **Start Your Next.js App**
 
-## Testing Your Sentry Setup
+     Launch your development server:
 
-Now let's verify everything is working:
+     ```bash
+     npm run dev
+     ```
 
-1. Start your Next.js app:
+  2. **Visit the Example Page**
 
-```bash
-npm run dev
-```
+     Navigate to the example page created by the wizard (typically `/sentry-example-page`)
 
-2. Visit the example page created by the wizard (typically `/sentry-example-page`)
+     ![Sentry Example Page](../../assets/img/6-ExamplePage.png)
 
-   ![Sentry Example Page](../../assets/img/6-ExamplePage.png)
+  3. **Trigger Test Errors**
 
-3. Click the different error button to generate test errors:
+     The example page lets you generate different types of errors:
+     
+     - Client-side errors
+     - Server-side errors
+     - API route errors
+     
+     Click the buttons to trigger errors and see how they appear in your Sentry dashboard.
 
-4. Check your Sentry dashboard at [sentry.io](https://sentry.io)
+  4. **Verify in Sentry Dashboard**
 
-   ![Sentry Dashboard](../../assets/img/7-IssuesPage.png)
-
-   - You should see your errors appearing in real-time
-   - Click on an error to see detailed information
-
-## Troubleshooting
-
-If you're not seeing errors in your Sentry dashboard:
-
-- **Check your DSN**: Verify the DSN in your Sentry config files
-- **Sample rate**: Confirm your `tracesSampleRate` isn't set too low
-
-## What You've Accomplished
-
-You've now:
-1. Set up Sentry to monitor your Next.js application
-2. Configured it to capture client, server, and edge runtime errors
-3. Verified the setup by generating test errors
-4. Can now see detailed error information in your Sentry dashboard
+     Log in to your Sentry account and check the "Issues" section to see the errors you've triggered. You should see detailed information about each error, including:
+     
+     - Stack traces
+     - Browser/OS information
+     - Request data
+     - User context (if configured)
+</Steps>
 
 ## Next Steps
 
-Now that we have Sentry catching errors, let's move to [Debugging Issues](/debugging-issues/) where we'll learn how to actively instrument our code with try/catch blocks and Sentry's error capturing functions to get even more context about what's going wrong in our application. 
+Now that Sentry is configured in your application, you're ready to start the workshop exercises. These will guide you through common error scenarios and show you how to use Sentry to diagnose and fix them.
+
+Head to the [Code Breaks](/code-breaks/) section to start your debugging journey.

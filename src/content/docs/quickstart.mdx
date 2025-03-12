@@ -12,7 +12,6 @@ Before you begin, ensure you have the following installed:
 
 - [Git](https://git-scm.com/downloads)
 - [Node.js](https://nodejs.org/) (includes npm)
-- [pnpm](https://pnpm.io/installation) package manager
 - [Homebrew](https://brew.sh/) (recommended for macOS users to simplify installations)
 
 Additionally, you'll need a Sentry account to follow along with the error monitoring portions of this workshop:
@@ -33,33 +32,13 @@ Additionally, you'll need a Sentry account to follow along with the error monito
      cd errorfix-workshop
      ```
 
-  3. **Create a .env file**
+  3. **Install dependencies**
 
      ```bash
-     touch .env
-     ```
-
-  4. **Add the database connection string to your .env file**
-
-     ```bash
-     # Update this to match your database parameters
-     echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres" >> .env
-     ```
-
-  5. **Install dependencies**
-
-     ```bash
-     # installs all pacakages
      npm i
      ```
 
-  6. **Set up Sentry using the wizard**
-
-     ```bash
-     npx @sentry/wizard@latest -i nextjs
-     ```
-
-  7. **Start the development server**
+  4. **Start the development server**
 
      ```bash
      npm run dev
