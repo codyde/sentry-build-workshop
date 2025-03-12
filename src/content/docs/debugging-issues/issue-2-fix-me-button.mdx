@@ -60,13 +60,13 @@ Since Autofix already suggested a fix for the API issue, let's apply it to this 
      Find the problematic query in the product detail route:
 
      ```javascript
-     const result = await db.execute(sql`SELECT * FROM "product" WHERE id = ${numId}`);
+     const result = await db.all(sql`SELECT * FROM "product" WHERE id = ${numId}`);
      ```
 
   2. **Update the query with the correct table name**
 
      ```javascript
-     const result = await db.execute(sql`SELECT * FROM "products" WHERE id = ${numId}`);
+     const result = await db.all(sql`SELECT * FROM "products" WHERE id = ${numId}`);
      ```
 
   3. **Save your file and test the functionality**

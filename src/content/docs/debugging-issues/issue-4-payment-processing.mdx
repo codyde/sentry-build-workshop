@@ -99,6 +99,16 @@ Server side, we'll create a span that will track the incoming data, and we can u
                processingPurchase: false,
                purchaseError: error.message || 'Payment processing failed'
              });
+
+            Sentry.captureException(error, {
+              tags: {
+                errorType: "checkout_error",
+                errorSubtype: "client_exception"
+              },
+              extra: {
+                cartDetails: paymentDetails
+              }
+            });
              
              return { 
                success: false, 

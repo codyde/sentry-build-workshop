@@ -71,13 +71,13 @@ When we look at Autofix, we can see it's suggesting a fix for the issue.
      Find the problematic query in `/api/products/route.ts`:
 
      ```javascript
-     const result = await db.execute(sql`SELECT * FROM "product"`);
+     const result = await db.all(sql`SELECT * FROM "product"`);
      ```
 
   2. **Update the query with the correct table name**
 
      ```javascript
-     const result = await db.execute(sql`SELECT * FROM "products"`);
+     const result = await db.all(sql`SELECT * FROM "products"`);
      ```
 
   3. **Save your file and reload your browser**
