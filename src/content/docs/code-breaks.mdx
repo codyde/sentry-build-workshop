@@ -9,8 +9,6 @@ But don't worry—by the end of this workshop, you'll be fixing errors like a pr
 
 ## Meet ErrorFix: The Buggiest Error Marketplace Ever
 
-![ErrorFix](../../assets/img/1-ItsBroke.gif)
-
 ErrorFix is built with Next.js and includes:
 
 - User authentication (when it works)
@@ -29,17 +27,19 @@ For the complete debugging adventure, let's run ErrorFix locally:
 
 First, you'll need Node.js (version 18 or higher recommended):
 
-- **Windows**: 
+- **Windows**:
+
   - Download the installer from [nodejs.org](https://nodejs.org/)
   - Run the installer and follow the setup wizard
   - Accept the default installation options (unless you have a good reason not to)
 
-- **macOS**: 
+- **macOS**:
   - Download the macOS installer from [nodejs.org](https://nodejs.org/)
   - Run the installer package and follow the instructions
   - Alternatively, if you use Homebrew: `brew install node`
 
 Verify your installation by opening a terminal or command prompt and typing:
+
 ```bash
 node --version
 npm --version
@@ -76,7 +76,7 @@ npm run dev
 
 ### 5. Open the Application
 
-Navigate to [http://localhost:3000](http://localhost:3000) in your browser. 
+Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
 
 Congratulations! You're now running a broken application. We'll fix it soon, I promise.
 
@@ -86,8 +86,15 @@ Don't want to mess with local setup? No problem! StackBlitz lets you run everyth
 
 1. Click this magic button to open the project in StackBlitz:
 
-   <a href="https://stackblitz.com/github/codyde/ErrorFix-Workshop/" target="_blank" rel="noopener noreferrer">
-     <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" />
+   <a
+     href='https://stackblitz.com/github/codyde/ErrorFix-Workshop/'
+     target='_blank'
+     rel='noopener noreferrer'
+   >
+     <img
+       src='https://developer.stackblitz.com/img/open_in_stackblitz.svg'
+       alt='Open in StackBlitz'
+     />
    </a>
 
 2. Wait for StackBlitz to set everything up (it's doing all that Node.js/npm stuff automatically)
@@ -98,12 +105,10 @@ Don't want to mess with local setup? No problem! StackBlitz lets you run everyth
 
 Now that you've got ErrorFix running (sort of), take a moment to click around and experience our carefully crafted chaos:
 
-1. Try to log in... Oh, that's embarrassing. Authentication seems to be having an identity crisis.
-2. Notice the empty marketplace? Where are all the error listings? Apparently, our error store has... errors.
-3. Let's click that promising "Fix Now" button because that would surely help... Wait, that's not working either?
-
-![ErrorFix Marketplace](../../assets/img/8-Error.gif)
+1. Just open the page. How long did you wait? Is it snappy?
+2. Try adding a few items to the cart. How's that working for you?
+3. Alright, let's checkout. There's a demo account which you can use (the admin one). Did you manage to checkout?
 
 ## Next Steps
 
-Now that we've got our gloriously broken application up and running, it's time to add some error monitoring. In the [next section](/configure-sentry/), we'll install Sentry to start catching these errors and figuring out what's actually going wrong. 
+Now that we've got our gloriously broken application up and running, it's time to add some error monitoring. In the [next section](/configure-sentry/), we'll install Sentry to start catching these errors and figuring out what's actually going wrong.

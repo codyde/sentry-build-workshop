@@ -13,27 +13,41 @@ Throughout this workshop, you've gained hands-on experience with Sentry's powerf
 
 We started by integrating Sentry into our Next.js application, configuring the SDK, and understanding how error tracking works across both client and server components.
 
-### 2. Debugging Real-world Issues
+### 2. Performance Monitoring and Optimization
 
-We tackled four common but challenging issues that developers face in production applications:
+We started by investigating performance issues in our Next.js application:
 
-- **Products API Error Handling**: You learned how to properly capture exceptions in API routes and how to add contextual information to errors for better debugging.
+- **Route Performance Analysis**: We identified that our main route was taking over 4.5 seconds to load, which is unacceptable for a marketplace application.
+- **Trace View Implementation**: We learned how to use Sentry's trace view to break down performance bottlenecks.
+- **Performance Insights**: We discovered that the majority of the slowdown happened while Next.js was rendering the page, not the database queries.
 
-- **Fix Me Button Functionality**: We explored how to trace issues across the frontend and backend, identifying where communication breaks down between components.
+### 3. Debugging Frontend Issues
 
-- **Authentication Header Mismatches**: You discovered how to monitor authentication flows and capture detailed information about auth failures to quickly resolve session issues.
+We tackled a challenging frontend issue with the Add to Cart functionality:
 
-- **Payment Processing Problems**: We implemented breadcrumbs and custom spans to track user interactions and payment flows, providing visibility into complex transaction processes.
+- **Error Context Enrichment**: We learned how to add meaningful context to errors by using `Sentry.setContext()`.
+- **Error Handling Best Practices**: We implemented proper error handling with descriptive messages and user feedback.
+- **UI/UX Improvements**: We fixed the size selection logic to prevent users from selecting unavailable options.
 
-### 3. Advanced Debugging Techniques
+### 4. Complex Checkout Issues
+
+We solved a complex checkout problem using multiple Sentry features:
+
+- **Seer AI Integration**: We leveraged Sentry's AI-powered debugging to identify root causes.
+- **Session Replay**: We used pixel-perfect session recordings to understand user interactions.
+- **Breadcrumbs**: We implemented event tracking to trace the sequence of actions leading to errors.
+- **Cross-Project Debugging**: We learned how Sentry can connect issues across different parts of your application (frontend and backend).
+
+## Advanced Debugging Techniques
 
 Throughout these exercises, you've mastered several advanced debugging techniques:
 
-- Using custom error attributes to provide context for exceptions
+- Using custom spans to track performance bottlenecks
 - Implementing breadcrumbs to track user journeys
-- Creating custom spans to monitor performance and trace transactions
-- Leveraging Sentry's trace view to understand the relationship between frontend and backend errors
-- Debugging asynchronous operations and API calls
+- Leveraging AI-powered debugging with Seer
+- Using session replay to understand user interactions
+- Adding contextual information to errors
+- Debugging across multiple services and platforms
 
 ## What's Next?
 
@@ -45,31 +59,25 @@ Sentry offers many more features beyond what we've covered in this workshop. Her
     [Learn more about Performance Monitoring](https://docs.sentry.io/product/performance/)
   </Card>
 
-  <Card title="Replays" icon="play">
+  <Card title="Replays" icon="laptop">
     See exactly what users experienced when errors occurred with pixel-perfect recreations of user sessions.
     [Explore Session Replay](https://docs.sentry.io/product/session-replay/)
   </Card>
 
-  <Card title="User Feedback" icon="comment">
-    Collect user feedback when errors occur to better understand the impact and context of issues.
-    [Set up User Feedback](https://docs.sentry.io/product/user-feedback/)
+  <Card title="Seer AI" icon="magnifier">
+    Leverage AI-powered debugging to automatically identify and fix issues in your codebase.
+    [Learn about Seer](https://docs.sentry.io/product/seer/)
   </Card>
 
-  <Card title="Profiling" icon="chart">
-    Identify performance bottlenecks at the code level with function-level timing data.
-    [Learn about Profiling](https://docs.sentry.io/product/profiling/)
+  <Card title="Breadcrumbs" icon="list-format">
+    Track user journeys and system events leading up to errors for better context.
+    [Learn about Breadcrumbs](https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/breadcrumbs/)
   </Card>
 </CardGrid>
 
 ### More Monitoring Solutions
 
-- **[Uptime Monitoring](https://docs.sentry.io/product/alerts/create-alerts/uptime-alert-config/)**: Monitor your services' availability and be alerted when they're down.
-
-- **[Cron Monitoring](https://docs.sentry.io/platforms/javascript/guides/nextjs/crons/)**: Track the health and performance of your scheduled jobs and background tasks.
-
-- **[Web Vitals](https://docs.sentry.io/product/performance/web-vitals/)**: Measure and improve key user-centric metrics that affect user experience.
-
-- **[Release Health](https://docs.sentry.io/product/releases/)**: Monitor the health of releases to catch errors before they impact too many users.
+- **[Custom Spans](https://docs.sentry.io/platforms/php/guides/laravel/tracing/instrumentation/custom-instrumentation/)**: Create custom performance measurements for specific parts of your application.
 
 - **[Trace View](https://docs.sentry.io/product/performance/trace-view/)**: Get a complete picture of transactions as they propagate through your system.
 
@@ -83,6 +91,12 @@ Sentry offers many more features beyond what we've covered in this workshop. Her
 
 ## Final Thoughts
 
-By implementing proper error monitoring and debugging practices as demonstrated in this workshop, you're now equipped to build more resilient applications and provide better experiences for your users. Remember that the most effective debugging strategy is proactive monitoring combined with detailed context gathering.
+By implementing proper error monitoring and debugging practices as demonstrated in this workshop, you're now equipped to build more resilient applications and provide better experiences for your users. Remember that the most effective debugging strategy combines multiple Sentry features:
+
+- Use performance monitoring to identify bottlenecks
+- Implement proper error handling with rich context
+- Leverage AI-powered debugging for complex issues
+- Track user journeys with breadcrumbs and session replay
+- Monitor cross-service interactions
 
 We hope you found this workshop valuable and that you'll continue exploring Sentry's capabilities to enhance your application development workflow. Happy debugging!
