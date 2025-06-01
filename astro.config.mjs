@@ -28,7 +28,6 @@ export default defineConfig({
           label: 'Workshop',
           items: [
             { label: 'Quickstart', slug: 'quickstart' },
-            { label: 'Code Breaks... So What Now', slug: 'code-breaks' },
             { label: 'Configuring Sentry', slug: 'configure-sentry' },
             {
               label: 'Debugging Issues',
